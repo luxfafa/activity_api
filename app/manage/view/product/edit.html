@@ -1,0 +1,205 @@
+{extend name='common:parent' /}
+{block name="title"}编辑产品{/block}
+{block name="content"}
+<div clas="layui-row">
+<div class="big_clear"></div>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">产品名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" required lay-verify="required" placeholder="必填" value="{$the->product_name}" autocomplete="off" class="layui-input"></div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">缩略图</label>
+        <div class="layui-input-block" id="thumb-btn">
+                <button type="button" class="layui-btn" id="uploadthumb">
+                  <i class="layui-icon">&#xe67c;</i>上传
+                </button>
+        </div>
+        <div class="layui-input-block" id="thumb-view">
+            <input type="hidden" name="thumb" value="{$the.thumb}" id="vof-thumb">
+            <img src="{:__APPURL__}resource/guzz_thumb/{$the.thumb}" id="thumb-img" width="260" style="margin-top: 10px;">
+        </div>
+    </div>
+  
+    <div class="layui-form-item">
+        <label class="layui-form-label">PDF文件</label>
+        <div class="layui-input-block" id="pdf-btn">
+                <button type="button" class="layui-btn layui-btn-primary" id="uploadpdf">
+                  <i class="layui-icon">&#xe67c;</i>上传
+                </button>
+        </div>
+      <div class="layui-input-block" id="pdf-view">
+            <input type="hidden" name="pdf_path" value="{$the.pdf_path}" id="vof-pdf">
+                <a href="{:__APPURL__}resource/guzz_pdf/{$the.pdf_path}" target="_blank" id="aof-pdf">查看</a>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">产品文字描述</label>
+        <div class="layui-input-block">
+          <textarea name="describe" placeholder="" class="layui-textarea" autocomplete="off" >{$the->describe}</textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input type="hidden" name="product_id" value="{$the.product_id}">
+            <button class="layui-btn" lay-submit lay-filter="formDemo" id="send">提交</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['form','layer','upload'],
+    function() {
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        var j = layui.$;
+        form.on('submit(formDemo)',
+        function(data) {
+            // console.log(data)
+            if(!data.field.pdf_path) {
+                layer.msg('PDF文件未上传!',{icon:5,time:1200});
+                return false;
+            }
+            if(!data.field.thumb) {
+                layer.msg('产品缩略图未上传!',{icon:5,time:1200});
+                return false;
+            }
+            // j('#send').text('提交中...');
+            // j('#send').attr('disabled',true);
+            j.ajax({
+                url:'/manage/product/add'
+                ,type: 'POST'
+                ,data: data.field
+                ,dataType:'json'
+                ,success:function(e){
+                   if(e.msg=='请登录') {
+                 layer.msg(e.msg,{icon:5,time:1000}
+                            ,function(){
+                            window.location.reload()
+                            }
+                        );
+                return;
+              }
+                  j('#send').text('提交');
+                  j('#send').attr('disabled',false);
+                    switch(e.code)
+                    {
+                        case 0:
+                            layer.msg(e.msg,{icon:5,time:1200}
+                                ,function(){
+                                    window.location.reload();
+                                }
+                            );
+                            break;
+                        case 1:
+                            layer.msg(e.msg,{icon:1,time:1100}
+                                ,function(){
+                                    window.location.href=e.url
+                                }
+                            );
+                            break;
+                    }
+                }
+            });
+            return false;
+        });
+          var uploadInst = upload.render({
+            elem: '#uploadthumb'
+            ,url: '/manage/common/upload_resource'
+            ,accept: 'file'
+            ,exts:'png|jpg|jpeg'
+            ,field:'thumb'
+            ,done: function(e){
+               if(e.msg=='请登录') {
+                 layer.msg(e.msg,{icon:5,time:1000}
+                            ,function(){
+                            // window.location.reload()
+                            }
+                        );
+                return;
+              }
+                
+                switch(e.code){
+                    case 1:
+                    var thumbsrc = e.data;
+                    
+                    j('#vof-thumb').attr('value',thumbsrc);
+                    j('#thumb-btn').hide();
+                    j('#thumb-img').attr('src',"{:__APPURL__}resource/guzz_thumb/"+thumbsrc);
+                        layer.msg(e.msg,{icon:1,time:1000}
+                            ,function(){
+                            // window.location.reload()
+                            }
+                        );
+                        break;
+                    case 0:
+                        layer.msg(e.msg,{icon:5}
+                            ,function(){
+                            // window.location.href=e.url
+                            }
+                        );
+                        break;
+                    }
+            }
+            ,error: function(){
+              
+            }
+          });
+      
+      var uploadInstofPdf = upload.render({
+            elem: '#uploadpdf'
+            ,url: '/manage/common/upload_pdf'
+            ,accept: 'file'
+            ,exts:'pdf'
+            ,field:'pdf_file'
+            ,done: function(e){
+              if(e.msg=='请登录') {
+                 layer.msg(e.msg,{icon:5,time:1000}
+                            ,function(){
+                            // window.location.reload()
+                            }
+                        );
+                return;
+              }
+               
+              
+                
+                switch(e.code){
+                    case 1:
+                        var pdfpath = e.data;
+                        
+                        
+                        j('#pdf-btn').hide();
+                        j('#vof-pdf').attr('value',pdfpath);
+                        j('#aof-pdf').attr('href',"{:__APPURL__}resource/guzz_pdf/"+pdfpath);
+                    
+                        layer.msg(e.msg,{icon:1,time:1000}
+                            ,function(){
+                            // window.location.reload()
+                            }
+                        );
+                        break;
+                    case 0:
+                        layer.msg(e.msg,{icon:5}
+                            ,function(){
+                            // window.location.href=e.url
+                            }
+                        );
+                        break;
+                    }
+            }
+            ,error: function(){
+              
+            }
+          });
+
+    });
+</script>
+
+</div>
+
+
+{/block}

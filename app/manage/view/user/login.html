@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>登录</title>
+	<link rel="stylesheet" type="text/css" href="{:__LAYUI__}css/layui.css">
+	<script type="text/javascript" src="{:__LAYUI__}layui.js"></script>
+	<style type="text/css">
+		#login-view{width:375px;margin: 0 auto;text-align:center;}
+	</style>
+</head>
+<body>
+<div class="layui-container">
+    <div style="margin-top:150px"></div>
+		<div id="login-view">
+			    <div class="layui-form-item">
+			        <label class="layui-form-label">帐号</label>
+			        <div class="layui-input-block">
+			            <input type="text" id="signaccount" required lay-verify="required" autocomplete="off" class="layui-input">
+			        </div>
+			    </div>
+			    <div class="layui-form-item">
+			        <label class="layui-form-label">密码</label>
+			        <div class="layui-input-block">
+			            <input type="password" id="signpwd" required lay-verify="required" autocomplete="off" class="layui-input">
+			        </div>
+			    </div>
+			    {:token()}
+			    <div class="layui-form-item">
+			        <div class="layui-input-block">
+			            <button class="layui-btn layui-btn-fluid" id="signIn">登录</button>
+			        </div>
+			    </div>
+		</div>
+</div>
+<script>
+    layui.use('form',
+    function() {
+        var form = layui.form;
+        var layer = layui.layer;
+        var t = layui.$;
+        t('#signIn').bind('click',function(){
+        	send();
+        });
+        t(document).keydown(function(e){
+        	if(e.which==13) {
+                send();
+        	}
+        });
+        function send() {
+            var params = {signaccount:t('#signaccount').val(),signpwd:t('#signpwd').val(),__token__: t("input[name='__token__']").eq(0).val()};
+            for(k in params) {
+                if(params[k].length==0) {
+                    return layer.msg('登入凭据不可为空!',{icon:5});
+                }
+            }
+            t('#signIn').text('提交中...');
+            t('#signIn').attr('disabled',true);
+            t.ajax({
+                url:'/manage/user/login'
+                ,data:params
+                ,method:'POST'
+                ,dataType:'json'
+                ,success:function(e){
+                    switch(e.code)
+                    {
+                        case 0:
+                            layer.msg(e.msg,{icon:5,time:1200}
+                                ,function(){
+                                    window.location.reload();
+                                }
+                            );
+                            break;
+                        case 1:
+                            layer.msg(e.msg,{icon:1,time:1000}
+                                ,function(){
+                                window.location.href=e.url
+                                }
+                            );
+                            break;
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

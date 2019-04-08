@@ -1,0 +1,98 @@
+{extend name='common:parent' /}
+{block name="title"}产品列表{/block}
+{block name="content"}
+
+    <div class="big_clear"></div>
+    <div class="layui-row">
+    	<form class="layui-form" action="">	
+    	<div class="layui-form-item">
+            <div class="layui-inline">
+
+                <label class="layui-form-label">产品名称:</label>
+			    <div class="layui-input-inline" style="width: 180px;">
+			      <input type="text" name="name" autocomplete="off" value="{$Request.get.name}" class="layui-input">
+			    </div>
+
+            </div>
+          
+          <div class="layui-inline">
+
+			    <div class="layui-input-inline" style="width: 180px;">
+
+			      <select name="sort">
+		            <option value="1" {if $Request.get.sort==1}selected{/if}>升序-按时间</option>
+		            <option value="2" {if $Request.get.sort==2}selected{/if}>降序-按时间</option>
+		          </select>
+
+			    </div>
+          </div>
+
+        
+        
+        
+		    <div class="layui-inline">
+		      <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+		    </div>
+            <div class="layui-inline">
+		      <a class="layui-btn layui-btn-normal" href="/manage/product/add"><i class="layui-icon">&#xe654;</i>添加产品</a>
+		    </div>
+		</div>
+        </form>
+    </div>
+    <div class="clear"></div>
+      
+    <div class="layui-row">
+		<table class="layui-table" lay-skin="line">
+	        <tr>
+	        	<th>产品名称</th>
+	        	<th>缩略图</th>
+	        	<th>文字介绍</th>
+	        	<th>介绍文件</th>
+	        	<th>操作</th>
+	        </tr>
+            {if count($list)>0}
+          
+	            {volist name="list" id="data"}
+                    <tr>
+			        	
+			        	<th>{$data.product_name}</th>
+			        	<th><a href="{:__APPURL__}resource/guzz_thumb/{$data.thumb}" target="_blank"><img src="{:__APPURL__}resource/guzz_thumb/{$data.thumb}" width="85"></a></th>
+			        	<th>{$data.describe}</th>
+			        	<th><a href="{:__APPURL__}resource/guzz_pdf/{$data.pdf_path}" target="_blank">查看</a></th>
+
+			        	<th><a class="layui-btn layui-btn-xs" href="/manage/product/edit?token={$data.product_id}"><i class="layui-icon layui-icon-edit"></i>编辑</a><a class="layui-btn layui-btn-danger layui-btn-xs" href="javascript:;" onclick="del({$data.product_id})"><i class="layui-icon layui-icon-edit"></i>删除</a></th>
+			        </tr>
+                {/volist}
+          
+          {else /}
+              <tr><th colspan="8" style="text-align:center">暂无数据</th></tr>
+          {/if}
+	    </table>
+
+    </div>
+    <div class="lay-row">
+	    <div class="layui-laypage">
+	    	{$list->render()}
+	    </div>
+    </div>
+
+    <script>
+        layui.use(['form','layer','upload'],function(){
+        	var form = layui.form;
+        	var layer = layui.layer;
+        	var j = layui.$;
+        	
+        });
+        function del(book_id) {
+    		// 
+    		layer.confirm('确定要删除吗', {
+	            btn : [ '确定', '取消' ]
+	            },function(index){
+	                var _href="/manage/product/del?token="+book_id;
+	                window.location.href=_href;
+	            }
+            )
+    	}
+    </script>
+
+{/block}

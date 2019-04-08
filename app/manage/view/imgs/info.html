@@ -1,0 +1,408 @@
+{extend name='common:parent' /}
+{block name="title"}完整书本内容{/block}
+{block name="content"}
+<style type="text/css">
+	.imgs{width:350px;}
+</style>
+<div class="big_clear"></div>
+<div class="layui-row">
+	<div class="layui-carousel" id="imgs" lay-filter="imgs">
+	  <div carousel-item>
+	  	{if($list)}
+		  	{volist name="list" id="item"}
+		        <div><img src="http://{$_SERVER['HTTP_HOST']}/resource/book_content/{$item.src}" class="imgs"></div>
+		    {/volist}
+	  	{else}
+            <div>暂未上传内容</div>
+	  	{/if}
+	  </div>
+	</div>
+</div>
+<div class="layui-row">
+	<div class="layui-card">
+	  <div class="layui-card-header">建议尺寸 375*520</div>
+	  <div class="layui-card-body" style="background:#000;color:#fff">
+	    共 <span>{$list|count}</span> 页 当前第 <span id="current_">1</span>	页
+	  </div>
+	</div>
+</div>
+<div class="big_clear"></div>
+
+<div class="layui-row">
+
+<table class="layui-table" lay-skin="line">
+    <tr>
+        <th>ID</th>
+        <th>图片</th>
+        <th>添加日期</th>
+        <th>操作</th>
+        <!-- <th>操作</th> -->
+    </tr>
+    {if count($list)>0}
+        {volist name="list" id="items"}
+                <tr>
+                    <th>{$items.img_id}</th>
+                    <th><a href="http://{$_SERVER['HTTP_HOST']}/resource/book_content/{$items.src}"><img src="http://{$_SERVER['HTTP_HOST']}/resource/book_content/{$items.src}" width="60"></a></th>
+
+                    <th>{$items.addtime|date="Y-m-d H:i",###}</th>
+                    <th><a class="layui-btn layui-btn-danger layui-btn-xs" href="javascript:;" onclick="img_del({$items.img_id})"><i class="layui-icon layui-icon-edit"></i>删除</a></th>
+                </tr>
+            {/volist}
+            {else/}
+            <tr><th colspan="7" style="text-align:center">暂无资源</th></tr>
+        {/if}
+</table>
+
+</div>
+<div class="lay-row">
+    <div class="layui-laypage">
+        {$list->render()}
+    </div>
+</div>
+<div class="clear"></div>
+<div class="layui-row">
+	<div class="layui-collapse" lay-accordion>
+<!-- 	  <div class="layui-colla-item">
+	    <h2 class="layui-colla-title">单图替换</h2>
+	    <div class="layui-colla-content layui-show">
+            
+			<div class="layui-row">
+			    <form class="layui-form">
+			        <div class="layui-form-item">
+			 
+					  <div class="layui-inline">
+					    <label class="layui-form-label">第</label>
+					    <div class="layui-input-inline" style="width: 100px;">
+					      <input type="number" name="page_num" autocomplete="off" class="layui-input">
+					    </div>
+					    <div class="layui-form-mid">页</div>
+					  
+					</div>
+			        <div class="layui-form-item">
+				        <label class="layui-form-label">图片</label>
+				        <div class="layui-input-block" id="thumb-btn">
+				                <button type="button" class="layui-btn" id="uploadthumb">
+				                  <i class="layui-icon">&#xe67c;</i>单图替换
+				                </button>
+				        </div>
+				        <div class="layui-input-block" id="thumb-view" style="display:none">
+				            <img src="" id="thumb-img" width="260">
+				            <input type="hidden" id="hview" name="src" value="">
+				        </div>
+				    </div>
+				    <div class="layui-form-item">
+				        <div class="layui-input-block">
+				        	<input type="hidden" name="books_id" value="{$the_book.book_id}">
+				            <button class="layui-btn" lay-submit lay-filter="replace_form" id="send">提交</button>
+				        </div>
+				    </div>
+
+
+			    </form>
+			</div>
+			
+
+	    </div>
+	  </div> -->
+	  <div class="layui-colla-item">
+	    <h2 class="layui-colla-title">批量上传</h2>
+	    <div class="layui-colla-content layui-show">
+	    	
+
+            <div class="layui-row">
+			    <form class="layui-form">
+			        <div class="layui-form-item">
+				        <label class="layui-form-label">图片</label>
+				        <div class="layui-input-block" id="thumb-btn">
+				                <button type="button" class="layui-btn" id="imgsupload">
+				                  <i class="layui-icon">&#xe67c;</i>选择
+				                </button>
+				        </div>
+				        <div class="layui-input-block" id="imgs-thumb-view" style="display:none">
+				            <!-- <img src="" id="thumb-img" width="260"> -->
+				            <!-- <input type="hidden" id="hview" name="src" value=""> -->
+				        </div>
+				    </div>
+				    <div class="layui-form-item">
+				        <div class="layui-input-block">
+				        	<input type="hidden" name="books_id" value="{$the_book.book_id}">
+				            <button class="layui-btn" lay-submit lay-filter="imgs_send" id="rep_send">提交</button>
+				        </div>
+				    </div>
+
+
+			    </form>
+			</div>
+	    </div>
+	  </div>
+
+<!--       <div class="layui-colla-item">
+        <h2 class="layui-colla-title">删除</h2>
+        <div class="layui-colla-content layui-show">
+            
+
+            <div class="layui-row">
+                <form class="layui-form">
+
+                    <div class="layui-form-item">
+             
+                      <div class="layui-inline">
+                        <label class="layui-form-label">第</label>
+                        <div class="layui-input-inline" style="width: 100px;">
+                          <input type="number" name="page_num" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid">页</div>
+                      
+                    </div>
+                </div>
+                    
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="hidden" name="books_id" value="{$the_book.book_id}">
+                            <button class="layui-btn layui-btn-danger" lay-submit lay-filter="del_send" id="del_send">删除此页内容</button>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+      </div>
+ -->
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	layui.use(['form','layer','carousel','upload'],
+	function(){
+		var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        var j = layui.$;
+
+        j('.layui-nav-tree').children().eq(2).addClass('layui-nav-itemed');
+
+        var carousel = layui.carousel;
+	    //建造实例
+	    carousel.render({
+	      elem: '#imgs'
+	      ,width: '375px'
+	      ,height: '520px' //设置容器宽度
+	      ,arrow: 'always' //始终显示箭头
+	      ,autoplay: false
+	      ,indicator:'outside'
+	      // ,anim: 'updown' //切换动画方式
+	    });
+	    carousel.on('change(imgs)', function(obj){ //test1来源于对应HTML容器的 lay-filter="test1" 属性值
+		  j('#current_').html(obj.index+1)
+		}); 
+
+
+	    // var uploadInst = upload.render({
+     //        elem: '#uploadthumb'
+     //        ,url: '/manage/common/book_content'
+     //        ,accept: 'file'
+     //        ,exts:'png|jpg|jpeg'
+     //        ,field:'resource'
+     //        ,done: function(e){
+     //            thumbsrc = e.data;
+     //            j('#hview').val(thumbsrc);
+     //            j('#thumb-btn').hide();
+     //            j('#thumb-img').attr('src',"{:__APPURL__}resource/book_content/"+thumbsrc);
+     //            j('#thumb-view').show();
+     //            switch(e.code){
+     //                case 0:
+     //                    layer.msg(e.msg,{icon:5,time:1000}
+     //                        ,function(){
+     //                        // window.location.reload()
+     //                        }
+     //                    );
+     //                    break;
+     //                case 1:
+     //                    layer.msg(e.msg,{icon:1}
+     //                        ,function(){
+     //                        // window.location.href=e.url
+     //                        }
+     //                    );
+     //                    break;
+     //                }
+     //        }
+     //        ,error: function(){
+              
+     //        }
+     //      });
+        var all_page_num = 0;
+	    var uploadImgs = upload.render({
+            elem: '#imgsupload'
+            ,url: '/manage/common/book_content'
+            ,accept: 'file'
+            ,exts:'png|jpg|jpeg'
+            ,field:'resource'
+            ,multiple: true
+            ,before: function(obj) {
+                layer.msg('图片上传中...', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: 0
+                })
+            }
+            ,done: function(e){
+                all_page_num++;
+            	layer.close(layer.msg('第'+all_page_num+'张上传成功！'));
+                thumbsrc = e.data;
+                // j('#hview').val(thumbsrc);
+                // j('#thumb-btn').hide();
+                // j('#thumb-img').attr('src',"{:__APPURL__}resource/book_content/"+thumbsrc);
+                // j('#thumb-view').show();
+               j('#imgs-thumb-view').append('<input type="hidden" name="imgs_src[]" class="newimgs" value="'+thumbsrc+'">');
+                switch(e.code){
+                    case 0:
+                        
+                        break;
+                    case 1:
+                        layer.msg(e.msg,{icon:1}
+                            ,function(){
+                            // window.location.href=e.url
+                            }
+                        );
+                        break;
+                    }
+            }
+            ,error: function(){
+              
+            }
+          });
+
+        
+
+
+
+	    // form.on('submit(replace_form)',
+     //    function(data) {
+     //        // console.log(data);return false;
+     //        if(!data.field.page_num || data.field.page_num<1) {
+     //            layer.msg('页码格式有误',{icon:5,time:1200});
+     //            return false;
+     //        }
+     //        if(!data.field.src) {
+     //            layer.msg('内容未上传!',{icon:5,time:1200});
+     //            return false;
+     //        }
+     //        j('#send').text('提交中...');
+     //        j('#send').attr('disabled',true);
+     //        j.ajax({
+     //            url:'/manage/Imgs/ctrl'
+     //            ,type: 'POST'
+     //            ,data: data.field
+     //            ,dataType:'json'
+     //            ,success:function(e){
+     //                switch(e.code)
+     //                {
+     //                    case 0:
+     //                        layer.msg(e.msg,{icon:5,time:1200}
+     //                            ,function(){
+     //                                window.location.reload();
+     //                            }
+     //                        );
+     //                        break;
+     //                    case 1:
+     //                        layer.msg(e.msg,{icon:1,time:1100}
+     //                            ,function(){
+     //                                window.location.href=e.url
+     //                            }
+     //                        );
+     //                        break;
+     //                }
+     //            }
+     //        });
+     //        return false;
+     //    });
+
+        form.on('submit(imgs_send)',
+        function(data) {
+            
+            if(j('.newimgs').length<1) {
+                layer.msg('未上传图片!',{icon:5,time:1200});
+                return false;
+            }
+            j('#rep_send').text('提交中...');
+            j('#rep_send').attr('disabled',true);
+            j.ajax({
+                url:'/manage/Imgs/batch'
+                ,type: 'POST'
+                ,data: data.field
+                ,dataType:'json'
+                ,success:function(e){
+                    switch(e.code)
+                    {
+                        case 0:
+                            layer.msg(e.msg,{icon:5,time:1200}
+                                ,function(){
+                                    window.location.reload();
+                                }
+                            );
+                            break;
+                        case 1:
+                            layer.msg(e.msg,{icon:1,time:1100}
+                                ,function(){
+                                    window.location.href=e.url
+                                }
+                            );
+                            break;
+                    }
+                }
+            });
+            return false;
+        });
+        // form.on('submit(del_send)',
+        // function(data) {
+            
+        //     if(!data.field.page_num) {
+        //         layer.msg('未输入页码!',{icon:5,time:1200});
+        //         return false;
+        //     }
+        //     j('#del_send').text('处理中...');
+        //     j('#del_send').attr('disabled',true);
+        //     j.ajax({
+        //         url:'/manage/Imgs/del'
+        //         ,type: 'POST'
+        //         ,data: data.field
+        //         ,dataType:'json'
+        //         ,success:function(e){
+        //             switch(e.code)
+        //             {
+        //                 case 0:
+        //                     layer.msg(e.msg,{icon:5,time:1200}
+        //                         ,function(){
+        //                             window.location.reload();
+        //                         }
+        //                     );
+        //                     break;
+        //                 case 1:
+        //                     layer.msg(e.msg,{icon:1,time:1100}
+        //                         ,function(){
+        //                             window.location.href=e.url
+        //                         }
+        //                     );
+        //                     break;
+        //             }
+        //         }
+        //     });
+        //     return false;
+        // });
+
+	});
+function img_del(img_id) {
+            // 
+            layer.confirm('确定要删除吗', {
+                btn : [ '确定', '取消' ]
+                },function(index){
+                    var _href="/manage/Imgs/del?token_id="+img_id;
+                    window.location.href=_href;
+                }
+            )
+        }
+</script>
+{/block}

@@ -1,0 +1,70 @@
+{extend name='common:parent' /}
+{block name="title"}编辑分类{/block}
+{block name="content"}
+<div clas="layui-row">
+<div class="big_clear"></div>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" required lay-verify="required" placeholder="必填" value="{$data.name}" autocomplete="off" class="layui-input"></div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input type="number" name="s" required lay-verify="required" placeholder="必填" value="{$data.s}" autocomplete="off" class="layui-input"></div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input type="hidden" name="cate_id" value="{$data.cate_id}">
+            <button class="layui-btn" lay-submit lay-filter="formDemo" id="send">修改</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['form','layer','upload'],
+    function() {
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        var j = layui.$;
+        form.on('submit(formDemo)',
+        function(data) {
+            j('#send').text('提交中...');
+            j('#send').attr('disabled',true);
+            j.ajax({
+                url:'/manage/cates/add'
+                ,type: 'POST'
+                ,data: data.field
+                ,dataType:'json'
+                ,success:function(e){
+                    switch(e.code)
+                    {
+                        case 0:
+                            layer.msg(e.msg,{icon:5,time:1200}
+                                ,function(){
+                                    window.location.reload();
+                                }
+                            );
+                            break;
+                        case 1:
+                            layer.msg(e.msg,{icon:1,time:1100}
+                                ,function(){
+                                    window.location.href=e.url
+                                }
+                            );
+                            break;
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+
+</div>
+
+
+{/block}

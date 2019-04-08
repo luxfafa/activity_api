@@ -1,0 +1,51 @@
+<div class="layui-side-scroll">
+    <!-- 左侧导航区域 -->
+    <ul class="layui-nav layui-nav-tree" lay-filter="test">
+        <!-- <li class="layui-nav-item{if ($Request.controller=='User')} layui-nav-itemed{/if}">
+            <a href="javascript:;">用户管理
+                <span class="layui-nav-more"></span>
+            </a>
+            <dl class="layui-nav-child">
+                {if $Think.session._supportuser.id==1}
+                    <dd{if (strtolower($Request.controller)=='user') AND ($Request.action=='index')} class="layui-this"{/if}>
+                        <a href="/manage/user">管理员</a>
+                    </dd>
+                    
+                     <dd{if ($Request.controller=='User') AND ($Request.action=='addsupport')} class="layui-this"{/if}>
+                        <a href="/manage/user/addsupport">添加管理员</a>
+                    </dd>
+                {/if}
+                <dd{if (strtolower($Request.controller)=='user') AND ($Request.action=='wechatuser')} class="layui-this"{/if}>
+                    <a href="/manage/user/wechatuser">公众号用户</a>
+                </dd>
+            </dl>
+        </li> -->
+
+        <li class="layui-nav-item{if (strtolower($Request.controller)=='customer')} layui-nav-itemed{/if}">
+            <a href="javascript:;">客户管理
+                <span class="layui-nav-more"></span>
+            </a>
+            <dl class="layui-nav-child">
+                <dd{if (strtolower($Request.controller)=='customer') AND ($Request.action=='list')} class="layui-this"{/if}>
+                    <a href="/manage/customer/list">客户列表</a>
+                </dd>
+            </dl>
+        </li>
+
+        <li class="layui-nav-item{if (strtolower($Request.controller)=='product')} layui-nav-itemed{/if}">
+            <a href="javascript:;">产品管理
+                <span class="layui-nav-more"></span>
+            </a>
+            <dl class="layui-nav-child">
+                <dd{if (strtolower($Request.controller)=='product') AND ($Request.action=='list')} class="layui-this"{/if}>
+                    <a href="/manage/product/list">产品列表</a>
+                </dd>
+                <dd{if (strtolower($Request.controller)=='product') AND ($Request.action=='add')} class="layui-this"{/if}>
+                    <a href="/manage/product/add">添加产品</a>
+                </dd>
+
+            </dl>
+        </li>
+        
+    </ul>
+</div>

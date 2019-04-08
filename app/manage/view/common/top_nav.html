@@ -1,0 +1,19 @@
+<div class="layui-header">
+    <div class="layui-logo">望虎国际</div>
+    <ul class="layui-nav layui-layout-left">
+        <li class="layui-nav-item">
+            <a href="/manage">概览</a>
+        </li>
+        <span class="layui-nav-bar"></span>
+    </ul>
+    <ul class="layui-nav layui-layout-right" lay-filter="">
+
+      <li class="layui-nav-item">
+        <a href="javascript:;">{$Think.session._supportuser.uname}</a>
+        <dl class="layui-nav-child time_top_nav">
+          <dd><a href="/manage/user/support?token={$Think.session._supportuser.id}">修改密码</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="javascript:;" id="logout">退出登录</a></li>
+    </ul>
+</div>

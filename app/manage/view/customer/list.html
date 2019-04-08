@@ -1,0 +1,101 @@
+{extend name='common:parent' /}
+{block name="title"}客户列表{/block}
+{block name="content"}
+
+    <div class="big_clear"></div>
+    <div class="layui-row">
+    	<form class="layui-form" action="">	
+    	<div class="layui-form-item">
+            <div class="layui-inline">
+
+                <label class="layui-form-label">客户姓名:</label>
+			    <div class="layui-input-inline" style="width: 180px;">
+			      <input type="text" name="name" autocomplete="off" value="{$Request.get.name}" class="layui-input">
+			    </div>
+
+            </div>
+
+          <div class="layui-inline">
+
+			    <div class="layui-input-inline" style="width: 180px;">
+
+			      <select name="sort">
+		            <option value="1" {if $Request.get.sort==1}selected{/if}>升序-按时间</option>
+		            <option value="2" {if $Request.get.sort==2}selected{/if}>降序-按时间</option>
+		          </select>
+
+			    </div>
+           </div>
+
+        
+        
+        
+		    <div class="layui-inline">
+		      <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+		    </div>
+            <div class="layui-inline">
+		      <a class="layui-btn layui-btn-normal" target="_blank" href="/manage/customer/export?name={$Request.get.name}&sort={$Request.get.sort}"><i class="layui-icon layui-icon-list"></i>批量导出</a>
+		    </div>
+		</div>
+        </form>
+    </div>
+    <div class="clear"></div>
+
+    <div class="layui-row">
+		<table class="layui-table" lay-skin="line">
+	        <tr>
+	        	<th>公司名称</th>
+                <th>联系人</th>
+	        	<th>联系电话</th>
+                <th>微信号</th>
+                <th>公司行业</th>
+	        	<th>公司地址</th>
+                <th>邮箱</th>
+                <th>操作</th>
+	        </tr>
+	            {if count($list)>0}
+          
+                    {volist name="list" id="data"}
+                    <tr>
+			        	<th>{$data.company_name}</th>
+			        	<th>{$data.customer_name}</th>
+                        <th>{$data.mobile}</th>
+			        	<th>{$data.wechat_id}</th>
+                        <th>{$data.company_type}</th>
+			        	<th>{$data.company_address} {$data.company_address_detail}</th>
+                        <th>{$data.email}</th>
+
+			        	<th><a class="layui-btn layui-btn-xs" href="/manage/customer/export_row?token={$data.customer_id}" target="_blank"><i class="layui-icon layui-icon-edit"></i>导出</a><a class="layui-btn layui-btn-danger layui-btn-xs" href="javascript:;" onclick="del({$data.customer_id})"><i class="layui-icon layui-icon-edit"></i>删除</a></th>
+			        </tr>
+                    {/volist}
+          
+                {else /}
+                  <tr><th colspan="8" style="text-align:center">暂无数据</th></tr>
+                {/if}
+	    </table>
+
+    </div>
+    <div class="lay-row">
+	    <div class="layui-laypage">
+	    	{$list->render()}
+	    </div>
+    </div>
+
+    <script>
+        layui.use(['layer','form'],function(){
+        	var layer = layui.layer;
+        	var j = layui.$;
+        	
+        });
+        function del(book_id) {
+    		layer.confirm('确定要删除吗', {
+	            btn : [ '确定', '取消' ]
+	            },function(index){
+	                var _href="/manage/customer/del?token="+book_id;
+	                window.location.href=_href;
+	            }
+            )
+    	}
+    </script>
+
+{/block}

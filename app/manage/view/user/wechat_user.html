@@ -1,0 +1,37 @@
+{extend name='common:parent' /}
+{block name="title"}微信用户{/block}
+{block name="content"}
+
+    <div class="big_clear"></div>
+    <div class="layui-row">
+		<table class="layui-table" lay-skin="line">
+	        <tr>
+	            <th>头像</th>
+	        	<th>微信昵称</th>
+	        	<th>性别</th>
+	        	<th>注册日期</th>
+	        	<!-- <th>操作</th> -->
+	        </tr>
+	        {if count($user_list)>0}
+		        {volist name="user_list" id="data"}
+	                    <tr>
+				        	<th><img src="{$data.avatar}" width="45"></th>
+				        	<th>{$data.nickname}</th>
+				        	<th>{$data.sex==1 ? '男' : '女'}</th>
+				        	<th>{$data.t|date="Y-m-d H:i",###}</th>
+				        	<th>
+				        	</th>
+				        </tr>
+	                {/volist}
+	                {else/}
+	                <tr><th colspan="7" style="text-align:center">暂无用户信息</th></tr>
+                {/if}
+	    </table>
+    </div>
+    <div class="lay-row">
+	    <div class="layui-laypage">
+	    	{$page}
+	    </div>
+    </div>
+
+{/block}
